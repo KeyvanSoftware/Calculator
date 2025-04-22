@@ -66,7 +66,11 @@ class Program
                     {
                         Console.WriteLine("This operation will result in a mathematical error.\n");
                     }
-                    else Console.WriteLine("Your result: {0:0.##}\n", result);
+                    else
+                    {
+                        Console.WriteLine("Your result: {0:0.##}\n", result);
+                        Console.WriteLine($"Calulator used {calculator.Counter} {(calculator.Counter == 1 ? "time." : "times.")}");
+                    }
                 }
                 catch (Exception e)
                 {

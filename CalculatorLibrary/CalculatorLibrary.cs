@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Newtonsoft.Json;
 
 namespace CalculatorLibrary
@@ -6,6 +7,8 @@ namespace CalculatorLibrary
     public class Calculator
     {
         JsonWriter writer;
+        private int _counter = 0;
+        public int Counter => _counter;
 
         public Calculator()
         {
@@ -33,22 +36,27 @@ namespace CalculatorLibrary
                 case "a":
                     result = num1 + num2;
                     writer.WriteValue("Add");
+                    _counter++;
                     break;
                 case "s":
                     result = num1 - num2;
                     writer.WriteValue("Subtract");
+                    _counter++;
                     break;
                 case "m":
                     result = num1 * num2;
                     writer.WriteValue("Multiply");
+                    _counter++;
                     break;
                 case "d":
                     // Ask the user to enter a non-zero divisor.
                     if (num2 != 0)
                     {
                         result = num1 / num2;
+                        _counter++;
                     }
                     writer.WriteValue("Divide");
+
                     break;
                 // Return text for an incorrect option entry.
                 default:
