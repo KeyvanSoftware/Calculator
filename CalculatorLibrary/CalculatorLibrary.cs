@@ -7,8 +7,9 @@ namespace CalculatorLibrary
     public class Calculator
     {
         JsonWriter writer;
-        private int _counter = 0;
-        public int Counter => _counter;
+        public int TimesUsed { get; set; }
+        private List<Calculation> previousOperations = new List<Calculation>();
+        public IReadOnlyList<Calculation> PreviousCalculations => previousOperations;
 
         public Calculator()
         {
@@ -21,7 +22,7 @@ namespace CalculatorLibrary
             writer.WriteStartArray();
         }
 
-        public double DoOperation(double num1, double num2, string op)
+        public double DoOperation(double num1, double num2, string op, Calculator calculator)
         {
             double result = double.NaN; // Default value is "not-a-number" if an operation, such as division, could result in an error.
             writer.WriteStartObject();
@@ -36,27 +37,26 @@ namespace CalculatorLibrary
                 case "a":
                     result = num1 + num2;
                     writer.WriteValue("Add");
-                    _counter++;
+                    op = "+";
                     break;
                 case "s":
                     result = num1 - num2;
                     writer.WriteValue("Subtract");
-                    _counter++;
+                    op = "-";
                     break;
                 case "m":
                     result = num1 * num2;
                     writer.WriteValue("Multiply");
-                    _counter++;
+                    op = "*";
                     break;
                 case "d":
                     // Ask the user to enter a non-zero divisor.
                     if (num2 != 0)
                     {
                         result = num1 / num2;
-                        _counter++;
                     }
                     writer.WriteValue("Divide");
-
+                    op = "/";
                     break;
                 // Return text for an incorrect option entry.
                 default:
@@ -65,7 +65,9 @@ namespace CalculatorLibrary
             writer.WritePropertyName("Result");
             writer.WriteValue(result);
             writer.WriteEndObject();
-
+            previousOperations.Add(new Calculation() { FirstOperand = num1, SecondOperand = num2, Operation = op, Result = result });
+            TimesUsed++;
+            PrintResult(result, calculator, num1, num2, op);
             return result;
         }
 
@@ -74,6 +76,30 @@ namespace CalculatorLibrary
             writer.WriteEndArray();
             writer.WriteEndObject();
             writer.Close();
+        }
+
+        public void RemoveLastCalculation() => previousOperations.RemoveAt(previousOperations.Count - 1);
+
+        public void DisplayCalculations()
+        {
+            foreach (var (calculation, index) in previousOperations.Select((value, i) => (value, i)))
+            {
+                Console.WriteLine($"{index + 1}) {calculation}");
+            }
+        }
+
+        public static void PrintResult(double result, Calculator calculator, double num1, double num2, string op)
+        {
+            Console.WriteLine($"{num1} {op} {num2} = {result:0.##}");
+            Console.WriteLine($"Calulator used {calculator.TimesUsed} {(calculator.TimesUsed == 1 ? "time." : "times.")}");
+        }
+
+        public double PerformOperationWithCheck(double num1, double num2, string? op)
+        {
+            double result = DoOperation(num1, num2, op, this);
+            if (double.IsNaN(result))
+                Console.WriteLine("This operation will result in a mathematical error.\n");
+            return result;
         }
     }
 }

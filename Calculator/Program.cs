@@ -1,7 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using CalculatorLibrary;
+using static CalculatorLibrary.Helpers;
 
 namespace CalculatorProgram;
+
 class Program
 {
     static void Main(string[] args)
@@ -16,66 +18,55 @@ class Program
         {
             // Declare variables and set to empty.
             // Use Nullable types (with ?) to match type of System.Console.ReadLine
-            string? numInput1 = "";
-            string? numInput2 = "";
             double result = 0;
 
             // Ask the user to type the first number.
-            Console.Write("Type a number, and then press Enter: ");
-            numInput1 = Console.ReadLine();
-
-            double cleanNum1 = 0;
-            while (!double.TryParse(numInput1, out cleanNum1))
-            {
-                Console.Write("This is not valid input. Please enter a numeric value: ");
-                numInput1 = Console.ReadLine();
-            }
+            double cleanNum1 = GetNumber("Type the first number, then press Enter: ");
 
             // Ask the user to type the second number.
-            Console.Write("Type another number, and then press Enter: ");
-            numInput2 = Console.ReadLine();
-
-            double cleanNum2 = 0;
-            while (!double.TryParse(numInput2, out cleanNum2))
-            {
-                Console.Write("This is not valid input. Please enter a numeric value: ");
-                numInput2 = Console.ReadLine();
-            }
+            double cleanNum2 = GetNumber("Type the second number, then press Enter: ");
 
             // Ask the user to choose an operator.
-            Console.WriteLine("Choose an operator from the following list:");
-            Console.WriteLine("\ta - Add");
-            Console.WriteLine("\ts - Subtract");
-            Console.WriteLine("\tm - Multiply");
-            Console.WriteLine("\td - Divide");
-            Console.Write("Your option? ");
-
-            string? op = Console.ReadLine();
+            string? op = GetOperator();
 
             // Validate input is not null, and matches the pattern
-            if (op == null || !Regex.IsMatch(op, "[a|s|m|d]"))
+            try
             {
-                Console.WriteLine("Error: Unrecognized input.");
-            }
-            else
-            {
-                try
+                result = calculator.PerformOperationWithCheck(cleanNum1, cleanNum2, op);
+                if (GetYesOrNo("Would you like to remove the last calculation?"))
+                    calculator.RemoveLastCalculation();
+
+                if (GetYesOrNo("Would you like to use previous calculations?"))
                 {
-                    result = calculator.DoOperation(cleanNum1, cleanNum2, op);
-                    if (double.IsNaN(result))
+                    if (calculator.PreviousCalculations.Count == 0)
                     {
-                        Console.WriteLine("This operation will result in a mathematical error.\n");
+                        Console.WriteLine("No previous calculations to show.");
                     }
                     else
                     {
-                        Console.WriteLine("Your result: {0:0.##}\n", result);
-                        Console.WriteLine($"Calulator used {calculator.Counter} {(calculator.Counter == 1 ? "time." : "times.")}");
+                        Console.WriteLine("\nPrevious Calculations:");
+                        calculator.DisplayCalculations();
+                        var listNumber = GetListNumber("Which calculation would you like to use? Use list number to make a selection\n", calculator);
+
+                        string? answer = GetInput("Would you like to reuse the same two operands (1) or the result (2)?");
+
+                        if (answer == "1")
+                        {
+                            op = GetOperator();
+                            result = calculator.PerformOperationWithCheck(calculator.PreviousCalculations[listNumber - 1].FirstOperand, calculator.PreviousCalculations[listNumber - 1].SecondOperand, op);
+                        }
+                        else if (answer == "2")
+                        {
+                            cleanNum2 = GetNumber("Type the second number, then press Enter: ");
+                            op = GetOperator();
+                            result = calculator.PerformOperationWithCheck(calculator.PreviousCalculations[listNumber - 1].Result, cleanNum2, op);
+                        }
                     }
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Oh no! An exception occurred trying to do the math.\n - Details: " + e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Oh no! An exception occurred trying to do the math.\n - Details: " + e.Message);
             }
             Console.WriteLine("------------------------\n");
 
