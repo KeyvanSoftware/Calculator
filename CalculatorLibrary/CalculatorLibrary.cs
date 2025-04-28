@@ -58,6 +58,21 @@ namespace CalculatorLibrary
                     writer.WriteValue("Divide");
                     op = "/";
                     break;
+                case "r":
+                    result = Math.Sqrt(num1);
+                    writer.WriteValue("Square Root");
+                    op = "√";
+                    break;
+                case "t":
+                    result = Math.Pow(num1, num2);
+                    writer.WriteValue("Taking the Power");
+                    op = "^";
+                    break;
+                case "x":
+                    result = 10 * num1;
+                    writer.WriteValue("10x");
+                    op = "10 x";
+                    break;
                 // Return text for an incorrect option entry.
                 default:
                     break;
@@ -65,7 +80,10 @@ namespace CalculatorLibrary
             writer.WritePropertyName("Result");
             writer.WriteValue(result);
             writer.WriteEndObject();
-            previousOperations.Add(new Calculation() { FirstOperand = num1, SecondOperand = num2, Operation = op, Result = result });
+            if ("+-/*^".Contains(op))
+                previousOperations.Add(new Calculation() { FirstOperand = num1, SecondOperand = num2, Operation = op, Result = result });
+            else
+                previousOperations.Add(new Calculation() { FirstOperand = num1, Operation = op, Result = result });
             TimesUsed++;
             PrintResult(result, calculator, num1, num2, op);
             return result;
@@ -90,7 +108,10 @@ namespace CalculatorLibrary
 
         public static void PrintResult(double result, Calculator calculator, double num1, double num2, string op)
         {
-            Console.WriteLine($"{num1} {op} {num2} = {result:0.##}");
+            if ("+-/*^".Contains(op))
+                Console.WriteLine($"{num1} {op} {num2} = {result:0.##}");
+            else
+                Console.WriteLine($"{op} {num1} = {result:0.##}");
             Console.WriteLine($"Calulator used {calculator.TimesUsed} {(calculator.TimesUsed == 1 ? "time." : "times.")}");
         }
 

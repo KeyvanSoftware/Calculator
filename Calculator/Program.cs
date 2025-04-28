@@ -16,18 +16,19 @@ class Program
         Calculator calculator = new Calculator();
         while (!endApp)
         {
+            // Ask the user to choose an operator.
+            string? op = GetOperator();
+
             // Declare variables and set to empty.
-            // Use Nullable types (with ?) to match type of System.Console.ReadLine
             double result = 0;
+            double cleanNum2 = 0;
 
             // Ask the user to type the first number.
             double cleanNum1 = GetNumber("Type the first number, then press Enter: ");
 
             // Ask the user to type the second number.
-            double cleanNum2 = GetNumber("Type the second number, then press Enter: ");
-
-            // Ask the user to choose an operator.
-            string? op = GetOperator();
+            if (Helpers.BinaryOperatorLetters.Contains(op))
+                cleanNum2 = GetNumber("Type the second number, then press Enter: ");
 
             // Validate input is not null, and matches the pattern
             try
@@ -46,21 +47,8 @@ class Program
                     {
                         Console.WriteLine("\nPrevious Calculations:");
                         calculator.DisplayCalculations();
-                        var listNumber = GetListNumber("Which calculation would you like to use? Use list number to make a selection\n", calculator);
 
-                        string? answer = GetInput("Would you like to reuse the same two operands (1) or the result (2)?");
-
-                        if (answer == "1")
-                        {
-                            op = GetOperator();
-                            result = calculator.PerformOperationWithCheck(calculator.PreviousCalculations[listNumber - 1].FirstOperand, calculator.PreviousCalculations[listNumber - 1].SecondOperand, op);
-                        }
-                        else if (answer == "2")
-                        {
-                            cleanNum2 = GetNumber("Type the second number, then press Enter: ");
-                            op = GetOperator();
-                            result = calculator.PerformOperationWithCheck(calculator.PreviousCalculations[listNumber - 1].Result, cleanNum2, op);
-                        }
+                        ReusePreviousCalculation(calculator);
                     }
                 }
             }

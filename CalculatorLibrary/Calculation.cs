@@ -10,7 +10,10 @@ namespace CalculatorLibrary
 
         public override string ToString()
         {
-            return $"{FirstOperand} {Operation} {SecondOperand} = {Result}";
+            if ("+-/*^".Contains(Operation))
+                return $"{FirstOperand} {Operation} {SecondOperand} = {Result}";
+            else
+                return $"{Operation} {FirstOperand} = {Result}";
         }
     }
 }
