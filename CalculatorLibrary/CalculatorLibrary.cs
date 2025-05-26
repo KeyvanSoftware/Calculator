@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace CalculatorLibrary
 {

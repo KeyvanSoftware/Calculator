@@ -100,12 +100,11 @@ namespace CalculatorLibrary
                 {
                     choice = GetInput("Would you like to reuse the same two operands (1) or the result (2)?", ReuseFirstOperand, ReuseSecondOperand);
                     return choice == ReuseFirstOperand
-                        ? ReuseBothOperands(listNumber, operation, calculator, previous)
-                        : ReuseResultWithNewOperand(listNumber, operation, calculator, previous);
+                        ? ReuseBothOperands(operation, calculator, previous)
+                        : ReuseResultWithNewOperand(operation, calculator, previous);
                 }
                 else
                 {
-                    double result;
                     double num2 = 0;
                     choice = GetInput("Would you like to reuse the first operand (1), the second operand (2) or the result (3)?", ReuseFirstOperand, ReuseSecondOperand, ReuseResult);
 
@@ -134,15 +133,15 @@ namespace CalculatorLibrary
                     num2 = GetNumber("Type the second number, then press Enter: ");
                 return calculator.PerformOperationWithCheck(previous.FirstOperand, num2, operation);
             }
-            return ReuseResultWithNewOperand(listNumber, operation, calculator, previous);
+            return ReuseResultWithNewOperand(operation, calculator, previous);
         }
 
-        private static double ReuseBothOperands(int listNumber, string operation, Calculator calculator, Calculation previous)
+        private static double ReuseBothOperands(string operation, Calculator calculator, Calculation previous)
         {
             return calculator.PerformOperationWithCheck(previous.FirstOperand, previous.SecondOperand, operation);
         }
 
-        private static double ReuseResultWithNewOperand(int listNumber, string operation, Calculator calculator, Calculation previous)
+        private static double ReuseResultWithNewOperand(string operation, Calculator calculator, Calculation previous)
         {
             double num2 = 0;
             if (BinaryOperatorLetters.Contains(operation))
